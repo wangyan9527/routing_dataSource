@@ -19,20 +19,13 @@ public class BookController {
 
     @RequestMapping("/save")
     public void save(String name, String code) {
-        RoutingCodeUtils.setCode(code);
-        Book book = new Book();
-        book.setName(name);
-        bookMapper.save(book);
-    }
-
-    @RequestMapping("/test")
-    public void test() {
-        List<Book> bookList = new ArrayList<>();
-        int i = 1;
-        while(true) {
+        try {
+            RoutingCodeUtils.setCode(code);
             Book book = new Book();
-            book.setName("test" + i++);
-            bookList.add(book);
+            book.setName(name);
+            bookMapper.save(book);
+        } finally {
+            RoutingCodeUtils.clear();
         }
     }
 
