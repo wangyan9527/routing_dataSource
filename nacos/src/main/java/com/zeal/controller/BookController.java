@@ -44,4 +44,15 @@ public class BookController {
         }
     }
 
+    @RequestMapping("/select")
+    public void select(String code) {
+        try {
+            RoutingCodeUtils.setCode(code);
+            List<Book> bookList = bookMapper.selectAll();
+            System.out.println(bookList);
+        } finally {
+            RoutingCodeUtils.clear();
+        }
+    }
+
 }

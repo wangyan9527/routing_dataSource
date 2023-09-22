@@ -1,13 +1,12 @@
 package com.zeal.config;
 
-import com.zeal.factory.DataSourceFactory;
+import com.zeal.factory.DataSourceUtils;
 import com.zeal.model.DataSourceDO;
 import com.zeal.utils.RoutingCodeUtils;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.util.Assert;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,7 +108,9 @@ public class DynamicRoutingDataSource extends AbstractRoutingDataSource {
                 convertAndPutDataSource(key, value);
             } else if (!dataSourceDO.equals(value)) {
                 System.out.println("修改数据源： 原=>" + dataSourceDO + "; 新=>" + value);
-                convertAndPutDataSource(key, value);
+                DataSource originalDataSource = convertAndPutDataSource(key, value);
+                // 关闭数据源
+                closeDataSourceIfNecessary(originalDataSource);
             }
         });
         // 筛选删除了的数据源
@@ -117,7 +118,9 @@ public class DynamicRoutingDataSource extends AbstractRoutingDataSource {
         originalKeySet.removeAll(changeDataSourceConfigMap.keySet());
         originalKeySet.forEach(key -> {
             System.out.println("移除数据源：" + this.dataSourceConfigMap.get(key));
-            this.resolvedDataSources.remove(key);
+            DataSource originalDataSource = this.resolvedDataSources.remove(key);
+            // 关闭数据源
+            closeDataSourceIfNecessary(originalDataSource);
         });
 
         // 重置数据，将变化数据置空
@@ -125,9 +128,13 @@ public class DynamicRoutingDataSource extends AbstractRoutingDataSource {
         changeDataSourceConfigMap = null;
     }
 
-    public void convertAndPutDataSource(String key, DataSourceDO value) {
+    public DataSource convertAndPutDataSource(String key, DataSourceDO value) {
         Object lookupKey = resolveSpecifiedLookupKey(key);
-        DataSource dataSource = resolveSpecifiedDataSource(DataSourceFactory.getDataSource(value));
-        this.resolvedDataSources.put(lookupKey, dataSource);
+        DataSource dataSource = resolveSpecifiedDataSource(DataSourceUtils.getDataSource(value));
+        return this.resolvedDataSources.put(lookupKey, dataSource);
+    }
+
+    public void closeDataSourceIfNecessary(DataSource dataSource) {
+        DataSourceUtils.close(dataSource);
     }
 }

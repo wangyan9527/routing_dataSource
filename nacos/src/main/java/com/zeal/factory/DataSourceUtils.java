@@ -11,7 +11,7 @@ import javax.sql.DataSource;
  *
  * @author zeal
  */
-public class DataSourceFactory {
+public class DataSourceUtils {
 
     public static DataSource getDataSource(DataSourceDO dataSourceDO) {
         DataSource dataSource = DataSourceBuilder.create()
@@ -30,4 +30,9 @@ public class DataSourceFactory {
         return dataSource;
     }
 
+    public static void close(DataSource dataSource) {
+        if (dataSource instanceof DruidDataSource) {
+            ((DruidDataSource) dataSource).close();
+        }
+    }
 }
