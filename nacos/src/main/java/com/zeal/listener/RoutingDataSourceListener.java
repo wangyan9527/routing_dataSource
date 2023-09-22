@@ -30,23 +30,14 @@ public class RoutingDataSourceListener {
     @Autowired
     private DynamicRoutingDataSource dynamicRoutingDataSource;
 
-    // 这种方式只要文件发生变化就会重新更新所有数据源
-//    @NacosConfigListener(groupId = "DEFAULT_GROUP", dataId = "dataSource.yml", type = ConfigType.YAML)
-//    public void listener(String msg) {
-//        List<DataSourceDO> dataSourceDOList = convertToDataSourceProperties(msg).getConfigList();
-//        // 根据内容进行调整修改
-//        Map<Object, Object> targetDataSources = dataSourceDOList.stream().collect(
-//                Collectors.toMap(DataSourceDO::getCode, DataSourceFactory::getDataSource, (oldValue, newValue) -> newValue));
-//        dynamicRoutingDataSource.setTargetDataSources(targetDataSources);
-//        dynamicRoutingDataSource.afterPropertiesSet();
-//    }
-
     @NacosConfigListener(groupId = "DEFAULT_GROUP", dataId = "dataSource.yml", type = ConfigType.YAML)
     public void listener(String msg) {
         List<DataSourceDO> dataSourceDOList = convertToDataSourceProperties(msg).getConfigList();
         // 根据内容进行调整修改，这里上锁防止并发修改时产生脏数据
         synchronized (this) {
-            dynamicRoutingDataSource.setChangeDataSourceConfigMap(dataSourceDOList);
+            Map<String, DataSourceDO> changeDataSourceConfigMap = dataSourceDOList.stream().collect(
+                    Collectors.toMap(DataSourceDO::getCode, Function.identity(), (o, n) -> n));
+            dynamicRoutingDataSource.setChangeDataSourceConfigMap(changeDataSourceConfigMap);
             dynamicRoutingDataSource.afterPropertiesSet();
         }
     }

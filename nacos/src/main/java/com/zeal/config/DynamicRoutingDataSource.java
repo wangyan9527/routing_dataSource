@@ -46,6 +46,10 @@ public class DynamicRoutingDataSource extends AbstractRoutingDataSource {
                 }));
     }
 
+    public void setChangeDataSourceConfigMap(Map<String, DataSourceDO> changeDataSourceConfigMap) {
+        this.changeDataSourceConfigMap = changeDataSourceConfigMap;
+    }
+
     @Override
     public void setDefaultTargetDataSource(Object defaultTargetDataSource) {
         this.defaultTargetDataSource = defaultTargetDataSource;
