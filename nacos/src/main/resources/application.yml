@@ -1,0 +1,30 @@
+base:
+  # JAR启动端口
+  server_port: 8080
+  #nacos配置中心基础信息
+  nacos_host_master: localhost
+  nacos_host_master_port: 8848
+  nacos_username: "nacos"
+  nacos_password: "nacos"
+  # 注意，发布时要切换到自己的 服务namespace  在nacos中查询即可
+  nacos_namespace: "routing_datasource"
+server:
+  port: ${base.server_port}
+
+nacos:
+  config:
+    bootstrap:
+      enable: true
+    server-addr: ${base.nacos_host_master}:${base.nacos_host_master_port}
+    type: yaml
+    # 分组
+    group: DEFAULT_GROUP
+    namespace: ${base.nacos_namespace}
+    data-ids: dataSource.yml
+    auto-refresh: true
+
+
+mybatis:
+  mapperLocations: classpath:mapper/**/*Mapper.xml
+  # 加载全局的配置文件
+  configLocation: classpath:mybatis/mybatis-config.xml
