@@ -28,3 +28,45 @@ mybatis:
   mapperLocations: classpath:mapper/**/*Mapper.xml
   # 加载全局的配置文件
   configLocation: classpath:mybatis/mybatis-config.xml
+
+
+spring:
+  # 默认数据源
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/db_master?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC&useSSL=false
+    username: root
+    password: root
+
+
+routing:
+  datasource:
+    configList:
+      - code: wuhan
+        type: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/db_0?useUnicode=true&characterEncoding=utf8&allowMultiQueries=true
+        username: root
+        password: root
+        initialSize: 1
+        minIdle: 3
+        maxActive: 20
+      - code: jingzhou
+        type: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/db_1?useUnicode=true&characterEncoding=utf8&allowMultiQueries=true
+        username: root
+        password: root
+        initialSize: 1
+        minIdle: 3
+        maxActive: 20
+      - code: yichang
+        type: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/db_2?useUnicode=true&characterEncoding=utf8&allowMultiQueries=true
+        username: root
+        password: root
+        initialSize: 1
+        minIdle: 3
+        maxActive: 20
